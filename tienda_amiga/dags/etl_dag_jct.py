@@ -32,7 +32,8 @@ with DAG(
     # TODO: Code transform task (for example you can use pandas)
     transform_task = PythonOperator(
         task_id="transform_jct",
-        python_callable=transform,
+        python_callable=transform,        
+        op_args=[f"{ dag.latest_execution_date.year}-{ dag.latest_execution_date.month}-{ dag.latest_execution_date.day}"] #["2023-05-10"],
     )
 
     # TODO: Code load task (for example you can use SQLAlchemy)
