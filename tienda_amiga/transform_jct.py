@@ -33,17 +33,20 @@ def quitar_corchetes(cadena: str):
 def transform(fecha: str):
     # TODO: Apply transformations
     df = pd.read_csv(DATA_DIR / "data_bitcoin.csv",usecols=['source_url','url','title','text','tags','authors','publish_date'])    
-    df = df.dropna()    #eliminamos los nulos     
+    #eliminamos los nulos     
+    df = df.dropna()    
+    #separacion de fecha y hora de publish_date
     df['publish_date_f'] = df['publish_date'].apply(get_fecha)
     df['publish_time'] = df['publish_date'].apply(get_hora)
+    #sacar solo la hora de publish_time
     df['publish_hour'] = df['publish_time'].apply(solo_hora)
     df['fecha']=fecha  #agregamos la columna de la fecha de ejecucion del dag
+    #limpieza de datos en las columnas tags y authors
     df['tags2'] = df['tags'].apply(quitar_corchetes)    
     df['authors2'] = df['authors'].apply(quitar_corchetes)    
-
     #eliminamos columnas antiguas   
     df.drop(["publish_date", "authors","tags"], axis = 1, inplace=True)
     #renombramos las columnas 
     df2=df.rename(columns = {'publish_date_f':'publish_date','authors2':'authors','tags2':'tags'})
-
+    #cargar los datos en csv
     df2.to_csv(DATA_DIR / "data_bitcoin_transformed.csv", index=False)
