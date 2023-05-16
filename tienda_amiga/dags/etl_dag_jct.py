@@ -9,8 +9,9 @@ from tienda_amiga.transform_jct import transform
 
 with DAG(    
         dag_id='gnews_bitcoin_dag',
-        start_date=datetime(2023, 5, 12),
-        schedule_interval=None,        
+        start_date=datetime(2023, 5, 16),
+        #schedule_interval=None, 
+        schedule_interval='0 */3 * * 1-6'
     ) as dag:
     dummy_start_task = DummyOperator(task_id="dummy_start")
 
