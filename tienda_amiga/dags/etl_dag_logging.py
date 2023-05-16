@@ -7,6 +7,12 @@ from tienda_amiga.extract import get_news_from_api
 from tienda_amiga.load import load_to_postgres
 from tienda_amiga.transform_jct import transform
 
+
+def test_function(**context):
+    print(f"Execution date is {context['ds']}")
+    print(f"DAG ID is {context['dag'].dag_id}")        
+    return context['ds']
+
 with DAG(    
         dag_id='logging_dag',
         start_date=datetime(2023, 5, 16),
@@ -14,7 +20,12 @@ with DAG(
         schedule_interval='0 4 * * *'
     ) as dag:
 
-    
+    python_task = PythonOperator(
+        task_id='python_task',
+        python_callable=test_function,
+        provide_context=True,        
+        dag=dag
+    )
     dummy_start_task = DummyOperator(task_id="dummy_start")
 
     def _print_execution_date(ds):
@@ -28,4 +39,4 @@ with DAG(
 
     dummy_end_task = DummyOperator(task_id="dummy_end")
 
-    dummy_start_task >>  print_dag >> dummy_end_task
+    dummy_start_task >>  print_dag >> python_task >> dummy_end_task
